@@ -8,6 +8,8 @@ import authRoutes from './routes/auth.routes';
 import productRoutes from './routes/products.routes';
 import categoryRoutes from './routes/categories.routes';
 import cartRoutes from './routes/cart.routes';
+import orderRoutes from './routes/orders.routes';
+import webhookRoutes from './routes/webhook.routes';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -18,6 +20,9 @@ app.use(cors({
   credentials: true,
 }));
 app.use(morgan('dev'));
+
+app.use('/api/webhooks', webhookRoutes);
+
 app.use(express.json());
 
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
@@ -25,6 +30,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/cart', cartRoutes);
+app.use('/api/orders', orderRoutes);
 app.use(errorHandler);
 
 app.listen(PORT, () => {
