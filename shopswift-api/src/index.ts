@@ -10,6 +10,7 @@ import categoryRoutes from './routes/categories.routes';
 import cartRoutes from './routes/cart.routes';
 import orderRoutes from './routes/orders.routes';
 import webhookRoutes from './routes/webhook.routes';
+import dashboardRoutes from './routes/dashboard.routes';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -31,6 +32,7 @@ app.use('/api/products', productRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/admin/dashboard', dashboardRoutes);
 app.use(errorHandler);
 
 app.listen(PORT, () => {
