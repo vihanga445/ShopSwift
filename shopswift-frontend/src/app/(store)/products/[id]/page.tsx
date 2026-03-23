@@ -8,14 +8,12 @@ import { Metadata } from 'next';
 const API = process.env.NEXT_PUBLIC_API_URL;
 
 async function getProduct(id: string): Promise<Product | null> {
-  // Using 127.0.0.1 is safer than localhost if you still get "Fetch Failed"
-  const res = await fetch(`${API}/products/${id}`, { next: { revalidate: 300 } });
+  const res = await fetch(`${API}/api/products/${id}`, { next: { revalidate: 300 } });
   if (res.status === 404) return null;
   if (!res.ok) throw new Error('Failed to fetch product details');
   return res.json();
 }
 
-// 1. FIX: Unwrapping params in generateMetadata
 export async function generateMetadata({ 
   params 
 }: { 

@@ -16,13 +16,13 @@ async function getProducts(params: SearchParams): Promise<PagedResult<Product>> 
   qs.set('page', params.page ?? '1');
   qs.set('pageSize', '12');
 
-  const res = await fetch(`${API}/products?${qs}`, { cache: 'no-store' });
+  const res = await fetch(`${API}/api/products?${qs}`, { cache: 'no-store' });
   if (!res.ok) throw new Error('Failed to fetch products');
   return res.json();
 }
 
 async function getCategories(): Promise<Category[]> {
-  const res = await fetch(`${API}/categories`, { next: { revalidate: 3600 } });
+  const res = await fetch(`${API}/api/categories`, { next: { revalidate: 3600 } });
   return res.ok ? res.json() : [];
 }
 
