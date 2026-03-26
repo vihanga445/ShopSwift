@@ -3,7 +3,7 @@ import prisma from '../utils/prisma';
 import { createError } from '../middleware/errorHandler';
 import { AuthRequest } from '../types';
 
-// Helper: get or create cart for user
+
 async function getOrCreateCart(userId: number) {
   let cart = await prisma.cart.findUnique({
     where: { userId },
@@ -26,7 +26,7 @@ async function getOrCreateCart(userId: number) {
   return cart;
 }
 
-// Helper: format cart for response
+
 function formatCart(cart: any) {
   const items = cart.items.map((item: any) => ({
     id: item.id,
@@ -49,7 +49,7 @@ function formatCart(cart: any) {
   };
 }
 
-// GET /api/cart
+
 export async function getCart(req: AuthRequest, res: Response, next: NextFunction) {
   try {
     const cart = await getOrCreateCart(req.user!.userId);
@@ -57,7 +57,7 @@ export async function getCart(req: AuthRequest, res: Response, next: NextFunctio
   } catch (error) { next(error); }
 }
 
-// POST /api/cart/items
+
 export async function addItem(req: AuthRequest, res: Response, next: NextFunction) {
   try {
     const { productId, quantity = 1 } = req.body;
@@ -98,7 +98,7 @@ export async function addItem(req: AuthRequest, res: Response, next: NextFunctio
   } catch (error) { next(error); }
 }
 
-// PATCH /api/cart/items/:itemId
+
 export async function updateItem(req: AuthRequest<{ itemId: string }>, res: Response, next: NextFunction) {
   try {
     const itemId = parseInt(req.params.itemId);
@@ -125,7 +125,7 @@ export async function updateItem(req: AuthRequest<{ itemId: string }>, res: Resp
   } catch (error) { next(error); }
 }
 
-// DELETE /api/cart/items/:itemId
+
 export async function removeItem(req: AuthRequest<{ itemId: string }>, res: Response, next: NextFunction) {
   try {
     const itemId = parseInt(req.params.itemId);
@@ -143,7 +143,7 @@ export async function removeItem(req: AuthRequest<{ itemId: string }>, res: Resp
   } catch (error) { next(error); }
 }
 
-// DELETE /api/cart
+
 export async function clearCart(req: AuthRequest, res: Response, next: NextFunction) {
   try {
     const cart = await prisma.cart.findUnique({ where: { userId: req.user!.userId } });

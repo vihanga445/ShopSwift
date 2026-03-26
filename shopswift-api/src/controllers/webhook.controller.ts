@@ -26,7 +26,7 @@ export async function stripeWebhook(req: Request, res: Response, next: NextFunct
       await createOrderFromPaymentIntent(paymentIntent);
     } catch (err) {
       console.error('Order creation failed:', err);
-      // We still return 200 so Stripe doesn't keep retrying a broken order
+      
     }
   }
 
@@ -34,7 +34,6 @@ export async function stripeWebhook(req: Request, res: Response, next: NextFunct
 }
 
 async function createOrderFromPaymentIntent(paymentIntent: Stripe.PaymentIntent) {
-  // 1. Idempotency: Don't create the same order twice if Stripe sends two notifications
   const existing = await prisma.order.findFirst({
     where: { stripePaymentIntentId: paymentIntent.id },
   });
@@ -52,9 +51,7 @@ async function createOrderFromPaymentIntent(paymentIntent: Stripe.PaymentIntent)
     (sum, item) => sum + item.quantity * Number(item.priceAtAdding), 0
   );
 
-  // 2. The Transaction: Everything below must happen TOGETHER or not at all
   await prisma.$transaction(async (tx) => {
-    // A. Create the Order and OrderItems
     const order = await tx.order.create({
       data: {
         userId,
@@ -68,15 +65,15 @@ async function createOrderFromPaymentIntent(paymentIntent: Stripe.PaymentIntent)
         items: {
           create: cart.items.map(item => ({
             productId: item.productId,
-            productName: item.product.name, // We save the name now in case it changes later
+            productName: item.product.name, 
             quantity: item.quantity,
-            unitPrice: item.priceAtAdding, // We save the price now in case it changes later
+            unitPrice: item.priceAtAdding, 
           })),
         },
       },
     });
 
-    // B. Reduce stock for each product
+   
     for (const item of cart.items) {
       await tx.product.update({
         where: { id: item.productId },
@@ -84,7 +81,7 @@ async function createOrderFromPaymentIntent(paymentIntent: Stripe.PaymentIntent)
       });
     }
 
-    // C. Clear the customer's cart
+    
     await tx.cartItem.deleteMany({ where: { cartId: cart.id } });
     await tx.cart.update({ where: { id: cart.id }, data: { updatedAt: new Date() } });
 

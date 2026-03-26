@@ -12,13 +12,13 @@ const nav = [
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  // 1. Get isInitialized from the store
+  
   const { user, logout, isInitialized } = useAuthStore();
   const router = useRouter();
   const path = usePathname();
 
   useEffect(() => {
-    // 2. ONLY run the redirect logic after the store has finished checking for a user
+    
     if (isInitialized) {
       if (!user) {
         router.push('/login');
@@ -28,7 +28,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
   }, [user, isInitialized, router]);
 
-  // 3. While the store is still initializing (checking the token), show a loading state
+  
   if (!isInitialized) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-100">
@@ -37,7 +37,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     );
   }
 
-  // 4. Safety check to ensure we don't render the dashboard for non-admins
+  
   if (!user || user.role !== 'Admin') return null;
 
   return (

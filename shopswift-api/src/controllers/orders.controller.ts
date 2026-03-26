@@ -8,7 +8,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2024-04-10' as any,
 });
 
-// 1. POST /api/orders/create-payment-intent
+
 export async function createPaymentIntent(req: AuthRequest, res: Response, next: NextFunction) {
   try {
     const userId = req.user!.userId;
@@ -23,7 +23,7 @@ export async function createPaymentIntent(req: AuthRequest, res: Response, next:
       return next(createError('Cart is empty', 400));
     }
 
-    // Check if products are still in stock before asking for money
+   
     for (const item of cart.items) {
       if (!item.product.isActive) {
         return next(createError(`${item.product.name} is no longer available`, 400));
@@ -37,7 +37,7 @@ export async function createPaymentIntent(req: AuthRequest, res: Response, next:
       (sum, item) => sum + item.quantity * Number(item.priceAtAdding), 0
     );
 
-    // Stripe expects amount in cents ($10.50 = 1050)
+    
     const amountInCents = Math.round(total * 100);
 
     const paymentIntent = await stripe.paymentIntents.create({
@@ -63,7 +63,7 @@ export async function createPaymentIntent(req: AuthRequest, res: Response, next:
   }
 }
 
-// 2. GET /api/orders (Current User's History)
+
 export async function getMyOrders(req: AuthRequest, res: Response, next: NextFunction) {
   try {
     const orders = await prisma.order.findMany({
@@ -75,7 +75,7 @@ export async function getMyOrders(req: AuthRequest, res: Response, next: NextFun
   } catch (error) { next(error); }
 }
 
-// 3. GET /api/orders/:id
+
 export async function getOrderById(req: AuthRequest<{ id: string }>, res: Response, next: NextFunction) {
   try {
     const order = await prisma.order.findFirst({
@@ -87,7 +87,7 @@ export async function getOrderById(req: AuthRequest<{ id: string }>, res: Respon
   } catch (error) { next(error); }
 }
 
-// 4. ADMIN: GET /api/admin/orders
+
 export async function getAllOrders(req: AuthRequest, res: Response, next: NextFunction) {
   try {
     const page = Math.max(1, parseInt(req.query.page as string) || 1);
@@ -114,7 +114,7 @@ export async function getAllOrders(req: AuthRequest, res: Response, next: NextFu
   } catch (error) { next(error); }
 }
 
-// 5. ADMIN: PATCH /api/admin/orders/:id/status
+
 export async function updateOrderStatus(req: AuthRequest<{ id: string }>, res: Response, next: NextFunction) {
   try {
     const validStatuses = ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled', 'Refunded'];
@@ -131,7 +131,7 @@ export async function updateOrderStatus(req: AuthRequest<{ id: string }>, res: R
   } catch (error) { next(error); }
 }
 
-// Helper function to format order response
+
 function formatOrder(order: any) {
   return {
     id: order.id,
